@@ -7,23 +7,26 @@ import java.util.Collections;
 
 public class DenisPimenovTest {
 
+    private static final int playersAmount = 5;         // how many players of each type will be loaded
+    private static final int gameMoves = 100;           // how many moves per one game
+    private static final int tournamentRounds = 10;     // how many rounds of tournament
+    private static final int playersToChange = 5;       // evolution rate, how many players will be changed
 
     // load players into the game (should be at least 5 players to play, more for evolution process)
     // this will not work without all the classes, but is customizable, so that you can load players you have
     private static ArrayList<Player> initPlayers() {
         ArrayList<Player> players = new ArrayList<>();
-        // load 20 players of each type available
-        for (int i = 0; i < 20; i++) players.add(new GreedyPlayer());
-        for (int i = 0; i < 20; i++) players.add(new RandomPlayer());
-        for (int i = 0; i < 20; i++) players.add(new CopyPlayer());
-        for (int i = 0; i < 20; i++) players.add(new GentlePlayer());
-        for (int i = 0; i < 20; i++) players.add(new DenisPimenovCode());
+//         load players of each type available
+        for (int i = 0; i < playersAmount; i++) players.add(new GreedyPlayer());
+        for (int i = 0; i < playersAmount; i++) players.add(new RandomPlayer());
+        for (int i = 0; i < playersAmount; i++) players.add(new CopyPlayer());
+        for (int i = 0; i < playersAmount; i++) players.add(new GentlePlayer());
+        for (int i = 0; i < playersAmount; i++) players.add(new DenisPimenovCode());
         return players;
     }
 
     // run the entire tournament
     private static void runTournament(ArrayList<Player> players) {
-        int tournamentRounds = 100; // how many rounds will be played
         int gameCounter = 0;        // current move
         double[] scores = new double[players.size()];   // score list
 
@@ -47,7 +50,7 @@ public class DenisPimenovTest {
             players = sortPlayers(players, scores);
 
             // remove 5 worst and copy 5 best players
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < playersToChange; i++) {
                 players.remove(players.size() - 1 - i);
                 try {
                     players.add(players.get(i).getClass().getDeclaredConstructor().newInstance());
@@ -72,14 +75,13 @@ public class DenisPimenovTest {
 
     // run individual game, return score of each of 2 players
     private static double[] runGame(Player player1, Player player2) {
-        int rounds = 150;                   // amount of moves made in the game
         int player1LastMove = 0;
         int player2LastMove = 0;
         int[] fields = {1, 1, 1};           // represents current condition of the fields
         double[] results = new double[2];   // scores of players
 
 
-        for (int move = 0; move < rounds; move++) {
+        for (int move = 0; move < gameMoves; move++) {
             // get new move
             int player1CurrentMove = player1.move(player2LastMove, fields[0], fields[1], fields[2]);
             int player2CurrentMove = player2.move(player1LastMove, fields[0], fields[1], fields[2]);
